@@ -1,6 +1,7 @@
 package com.example.watermyplants.feature_plant.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.work.*
 import com.example.watermyplants.feature_plant.data.data_source.PlantDao
 import com.example.watermyplants.feature_plant.domain.model.Plant
@@ -47,7 +48,8 @@ class PlantRepositoryImpl(
     }
 
     override suspend  fun deleteReminder(plant: Plant) {
-        workManager.cancelWorkById(plant.workId!!)
+        val result = workManager.cancelWorkById(plant.workId!!)
+        Log.d("TAG", "deleteReminder: "+ result.result.isCancelled)
         plantDao.deletePlant(plant)
     }
 

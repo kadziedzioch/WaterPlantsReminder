@@ -11,6 +11,8 @@ import androidx.camera.core.ImageProxy
 import com.example.watermyplants.feature_plant.data.util.sdk29AndUp
 import com.example.watermyplants.feature_plant.domain.repository.CameraRepository
 import com.example.watermyplants.feature_plant.domain.utils.Resource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 
@@ -18,14 +20,14 @@ import java.util.*
     val context: Context
 ) : CameraRepository{
 
-    override suspend fun saveImage(img: ImageProxy): Resource<Uri> {
+    override suspend fun saveImage(img: Image, rotation: Float): Resource<Uri> {
 
         val imageCollection = sdk29AndUp {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         } ?: MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
         val name = UUID.randomUUID().toString()
-        val bitmap = img.image?.toBitmap()?.rotate(img.imageInfo.rotationDegrees.toFloat())
+        val bitmap = img.toBitmap().rotate(rotation)
 
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "$name.png")
@@ -46,6 +48,8 @@ import java.util.*
             Resource.Success(uri)
         } catch (exception: IOException) {
             Resource.Failure(exception.message!!)
+        } finally {
+            img.close()
         }
 
     }

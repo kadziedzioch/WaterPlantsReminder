@@ -7,8 +7,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,7 +53,7 @@ fun AddEditPlantScreen(
             when(event){
                 is AddEditPlantViewModel.UiEvent.SavePlant ->
                 {
-                    //navController.navigateUp()
+                    navController.navigateUp()
                 }
                 is AddEditPlantViewModel.UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.message)
@@ -63,11 +65,28 @@ fun AddEditPlantScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ){
+            IconButton(
+                onClick = {navController.navigateUp()},
+                modifier = Modifier
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "Go back"
+                )
+            }
+        }
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(10.dp),
+                .padding(10.dp)
+                .padding(top = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -80,7 +99,7 @@ fun AddEditPlantScreen(
                         .build(),
                     modifier = Modifier
                         .size(90.dp)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(7.dp))
                         .clickable {
                             navController.navigate(Screen.CameraScreen.route)
                         },
@@ -89,16 +108,17 @@ fun AddEditPlantScreen(
                 )
             }
             else{
-                IconButton(onClick = {
+                ExtendedFloatingActionButton(onClick = {
                     navController.navigate(Screen.CameraScreen.route)
                 }) {
                     Icon(
-                        modifier = Modifier
-                            .size(90.dp)
-                            .clip(CircleShape),
+                        modifier = Modifier,
                         imageVector = Icons.Default.AddAPhoto,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = "Take photo")
                 }
             }
 

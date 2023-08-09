@@ -7,5 +7,5 @@ import com.example.watermyplants.feature_plant.domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface CameraRepository {
-    suspend fun saveImage(img: ImageProxy) : Resource<Uri>
+    suspend fun saveImage(img: Image, rotation: Float) : Resource<Uri>
 }

@@ -3,6 +3,8 @@ package com.example.watermyplants.feature_plant.presentation.camera
 import android.media.Image
 import android.net.Uri
 import androidx.camera.core.ImageProxy
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watermyplants.feature_plant.domain.use_case.SaveImageToExternalStorage
@@ -10,10 +12,7 @@ import com.example.watermyplants.feature_plant.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,16 +24,22 @@ class CameraViewModel @Inject constructor(
     private val channel =  Channel<UiEvent>()
     val eventFlow = channel.receiveAsFlow()
 
-    fun onPhotoCaptured(img: ImageProxy?) {
-        viewModelScope.launch {
+    private val _isSaving = mutableStateOf(false)
+    val isSaving : State<Boolean> = _isSaving
+
+    fun onPhotoCaptured(img: Image?, rotation: Float) {
+        _isSaving.value = true
+        viewModelScope.launch(Dispatchers.IO) {
             img?.let {
-                saveImageToExternalStorage(it).let { result ->
+                saveImageToExternalStorage(it, rotation).let { result ->
                     when(result){
                         is Resource.Failure -> {
                             channel.send(UiEvent.ShowSnackBar(result.message))
+                            _isSaving.value = false
                         }
                         is Resource.Success -> {
                             channel.send(UiEvent.SavePicture(result.result))
+                            _isSaving.value = false
                         }
                     }
                 }

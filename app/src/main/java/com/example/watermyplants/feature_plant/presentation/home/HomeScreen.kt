@@ -1,9 +1,6 @@
 package com.example.watermyplants.feature_plant.presentation.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -28,7 +25,6 @@ fun HomeScreen(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
 
     Scaffold(
         floatingActionButton = {
@@ -68,7 +64,16 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ){
+                    item {
+                        Text(
+                            text = "My plants",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                        Spacer(modifier = Modifier.height(15.dp))
+                    }
                     items(state.plants){ plant->
                         PlantItem(
                             onPlantClicked = {
@@ -76,7 +81,9 @@ fun HomeScreen(
                                     Screen.AddEditPlantScreen.route + "?plantId=" + plant.id
                                 )
                             },
-                            onPlantDeleted = { /*TODO*/ },
+                            onPlantDeleted = {
+                                viewModel.deletePlant(plant)
+                            },
                             plant = plant
                         )
                     }

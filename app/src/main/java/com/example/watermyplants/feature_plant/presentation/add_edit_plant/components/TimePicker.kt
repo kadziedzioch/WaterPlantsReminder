@@ -45,7 +45,7 @@ fun TimePicker(
             maxLines = 1,
             label = { Text(text = "Time") },
             placeholder = {
-                Text(text = "for ex. 30")
+                Text(text = "1")
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 

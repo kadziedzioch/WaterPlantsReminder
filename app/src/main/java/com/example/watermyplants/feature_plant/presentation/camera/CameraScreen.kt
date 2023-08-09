@@ -16,10 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -76,6 +73,7 @@ fun CameraScreenContent(
     val context = LocalContext.current
     val viewModel = hiltViewModel<CameraViewModel>()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val isSaving by viewModel.isSaving
     val cameraController = remember { LifecycleCameraController(context) }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -122,6 +120,13 @@ fun CameraScreenContent(
                 .padding(20.dp)
             )
             {
+                if(isSaving){
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = androidx.compose.ui.graphics.Color.White
+                    )
+                }
+
                 IconButton(
                     onClick = navigateBack,
                     modifier = Modifier
@@ -138,8 +143,9 @@ fun CameraScreenContent(
                         val mainExecutor = ContextCompat.getMainExecutor(context)
                         cameraController.takePicture(mainExecutor, @ExperimentalGetImage object : ImageCapture.OnImageCapturedCallback() {
                             override fun onCaptureSuccess(image: ImageProxy) {
-                                viewModel.onPhotoCaptured(image)
-                                image.close()
+                                val rotation = image.imageInfo.rotationDegrees.toFloat()
+                                val img = image.image
+                                viewModel.onPhotoCaptured(img, rotation)
                             }
                             override fun onError(exception: ImageCaptureException) {
                                 viewModel.onError(exception.message ?: "Couldn't save image")
@@ -147,7 +153,8 @@ fun CameraScreenContent(
                         })
                     },
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                        .align(Alignment.BottomCenter),
+                    enabled = !isSaving
                 ) {
                     Icon(
                         imageVector = Icons.Default.PhotoCamera,
