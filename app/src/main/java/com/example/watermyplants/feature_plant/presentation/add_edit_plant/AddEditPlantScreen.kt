@@ -103,7 +103,7 @@ fun AddEditPlantScreen(
                         .clickable {
                             navController.navigate(Screen.CameraScreen.route)
                         },
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                     contentDescription = null
                 )
             }

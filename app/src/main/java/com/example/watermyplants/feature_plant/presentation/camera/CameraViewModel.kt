@@ -2,7 +2,6 @@ package com.example.watermyplants.feature_plant.presentation.camera
 
 import android.media.Image
 import android.net.Uri
-import androidx.camera.core.ImageProxy
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

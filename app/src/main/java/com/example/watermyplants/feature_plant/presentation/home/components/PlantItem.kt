@@ -70,7 +70,7 @@ fun PlantItem(
                     modifier = Modifier
                         .size(60.dp)
                         .clip(RoundedCornerShape(5.dp)),
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.width(10.dp))

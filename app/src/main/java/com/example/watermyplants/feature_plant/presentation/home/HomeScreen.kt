@@ -38,59 +38,62 @@ fun HomeScreen(
             }
         }
     ) { paddingValues ->
-        when(val state = uiState){
-            is HomeUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(paddingValues)
-                        .padding(15.dp)
-                ){
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(10.dp)
+        ) {
+            Text(
+                text = "My plants",
+                style = MaterialTheme.typography.headlineLarge
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            when(val state = uiState){
+                is HomeUiState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ){
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
                 }
-            }
-            is HomeUiState.NothingFound ->{
-                Text(
-                    text = "No plants found",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(top = 20.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-            is HomeUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ){
-                    item {
+                is HomeUiState.NothingFound ->{
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ){
                         Text(
-                            text = "My plants",
-                            style = MaterialTheme.typography.headlineLarge
-                        )
-                        Spacer(modifier = Modifier.height(15.dp))
-                    }
-                    items(state.plants){ plant->
-                        PlantItem(
-                            onPlantClicked = {
-                                navController.navigate(
-                                    Screen.AddEditPlantScreen.route + "?plantId=" + plant.id
-                                )
-                            },
-                            onPlantDeleted = {
-                                viewModel.deletePlant(plant)
-                            },
-                            plant = plant
+                            text = "Click button below \n to add plants!",
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
+                is HomeUiState.Success -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ){
+                        items(state.plants){ plant->
+                            PlantItem(
+                                onPlantClicked = {
+                                    navController.navigate(
+                                        Screen.AddEditPlantScreen.route + "?plantId=" + plant.id
+                                    )
+                                },
+                                onPlantDeleted = {
+                                    viewModel.deletePlant(plant)
+                                },
+                                plant = plant
+                            )
+                        }
+                    }
 
+                }
             }
         }
+
     }
 
 
